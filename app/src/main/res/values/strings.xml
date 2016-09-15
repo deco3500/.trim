@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">DiscoverLocalPrototype</string>
-    <string name="title_activity_map">Map</string>
+    // Common Strings
+    <string name="app_name">Discover Local</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main">MainActivity</string>
+    // API Key
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCMqCD3yuZ7DTZ_OwquXXKHtadvt52jGbE</string>
 </resources>
