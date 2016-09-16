@@ -9,19 +9,24 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private boolean mapReady = false;
-
+    Marker myMarker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,19 +75,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mapReady = true;
     }
-
-    public void onConnected(Bundle b) {
+    private void markLocation(){
         if (mapReady && ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-
+            if (myMarker != null){
+                myMarker.remove();
+            }
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
             if (lastLocation != null) {
                 LatLng location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                map.addMarker(new MarkerOptions().position(location).title("Marker at your location"));
+                myMarker = map.addMarker(new MarkerOptions().position(location).title("Marker at your location"));
                 map.moveCamera(CameraUpdateFactory.newLatLng(location));
             }
+        }
+    }
+    public void onConnected(Bundle b) {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationRequest req = new LocationRequest();
+            req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            req.setInterval(1000);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, req, this);
         }
     }
 
@@ -93,5 +107,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        markLocation();
     }
 }
