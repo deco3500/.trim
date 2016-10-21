@@ -4,4 +4,5 @@
 
     // API Key
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCMqCD3yuZ7DTZ_OwquXXKHtadvt52jGbE</string>
+    <string name="title_activity_add_form">AddForm</string>
 </resources>
