@@ -2,6 +2,7 @@ package com.rhysmakesthings.discoverlocalprototype;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -33,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        String type = intent.getType();
+        String action = intent.getAction();
         setContentView(R.layout.main_layout);
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -48,6 +52,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(new Intent(MainActivity.this, AddForm.class));
             }
         });
+        if (Intent.ACTION_SEND.equals(action)) {
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    Intent i = new Intent(MainActivity.this, AddForm.class);
+                    i.putExtra("EXTRA_TEXT",sharedText);
+                    startActivity(i);
+                }
+            }
+        }
     }
 
     @Override
@@ -73,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, 12f));
         }
 
         // Otherwise display "No Permissions" layout
@@ -81,8 +96,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         // Changed temporarily for debugging.
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-
+        map.getUiSettings().setScrollGesturesEnabled(false);
         mapReady = true;
     }
     private void markLocation(){
@@ -97,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 LatLng location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                 myMarker = map.addMarker(
                         new MarkerOptions().position(location).title("Marker at your location").icon(
-                                BitmapDescriptorFactory.fromAsset("run.bmp")));
+                                BitmapDescriptorFactory.fromAsset("run.png")));
                 map.moveCamera(CameraUpdateFactory.newLatLng(location));
             }
         }

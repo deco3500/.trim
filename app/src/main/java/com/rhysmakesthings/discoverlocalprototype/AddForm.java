@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class AddForm extends AppCompatActivity {
 
@@ -17,7 +18,12 @@ public class AddForm extends AppCompatActivity {
         setContentView(R.layout.activity_add_form);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Intent intent = getIntent();
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null){
+            EditText e = (EditText) findViewById(R.id.editText);
+            e.setText(sharedText);
+        }
         Button fab = (Button) findViewById(R.id.place);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
