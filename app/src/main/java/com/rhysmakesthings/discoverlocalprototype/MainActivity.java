@@ -24,12 +24,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private boolean mapReady = false;
+    private static ArrayList<ArrayList<String>> markers = new ArrayList<ArrayList<String>>();
+    private static HashMap<ArrayList<String>,LatLng> markerC = new HashMap<ArrayList<String>,LatLng>();
     Marker myMarker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +62,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     Intent i = new Intent(MainActivity.this, AddForm.class);
-                    i.putExtra("EXTRA_TEXT",sharedText);
+                    i.putExtra(Intent.EXTRA_TEXT,sharedText);
                     startActivity(i);
                 }
             }
+        }
+        if (intent.getStringExtra("url") != null){
+            ArrayList<String> add = new ArrayList<String>();
+            add.add(intent.getStringExtra("url"));
+            add.add(intent.getStringExtra("title"));
+            add.add(intent.getStringExtra("tags"));
+            markers.add(add);
         }
     }
 
@@ -110,9 +122,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (lastLocation != null) {
                 LatLng location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                 myMarker = map.addMarker(
-                        new MarkerOptions().position(location).title("Marker at your location").icon(
+                        new MarkerOptions().position(location).icon(
                                 BitmapDescriptorFactory.fromAsset("run.png")));
                 map.moveCamera(CameraUpdateFactory.newLatLng(location));
+            }
+        }
+    }
+    private void placeChallenge(ArrayList<String> c){
+        if (mapReady && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LatLng location = null;
+            if (markerC.containsKey(c)){
+                location = markerC.get(c);
+            }
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            System.out.println(lastLocation);
+            if (lastLocation != null || location != null) {
+                if (location == null){
+                    location = new LatLng(lastLocation.getLatitude()+0.0001f, lastLocation.getLongitude());
+                    markerC.put(c, location);
+                }
+                map.addMarker(
+                        new MarkerOptions().position(location).title(c.get(1)).snippet(c.get(2)));
             }
         }
     }
@@ -137,6 +169,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onLocationChanged(Location location) {
+        for (ArrayList<String> s: markers){
+            placeChallenge(s);
+        }
         markLocation();
     }
 }
