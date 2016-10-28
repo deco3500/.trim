@@ -1,7 +1,8 @@
 html,body{
 	height:100%;
 	margin:0;
-	padding:0;}
+	padding:0;
+	width:100%;}
 body{ 	font-size:14px;
 		background-color:#1240AB;
 		font-family: 'Ubuntu Condensed', sans-serif;}
