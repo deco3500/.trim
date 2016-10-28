@@ -29,8 +29,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Queue"
-        android:id="@+id/queue"
+        android:text="Friends"
+        android:id="@+id/friend"
         android:layout_alignTop="@+id/profile"
         android:layout_centerHorizontal="true" />
 

@@ -20,7 +20,9 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <data android:mimeType="text/plain" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
@@ -32,7 +34,12 @@
         <activity
             android:name=".AddForm"
             android:label="@string/title_activity_add_form"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FriendActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_friend"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

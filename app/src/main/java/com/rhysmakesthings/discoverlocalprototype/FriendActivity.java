@@ -1,168 +1,141 @@
 package com.rhysmakesthings.discoverlocalprototype;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class FriendActivity extends AppCompatActivity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
-    private static final int UI_ANIMATION_DELAY = 300;
-
-    private View mContentView;
-    private View mControlsView;
-    private boolean mVisible;
-
+    ListView friend = null;
+    String[] friendL = null;
+    ArrayList<Integer> friendS = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_friend);
-
-        mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
-
-
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        System.out.println(getIntent().getStringArrayExtra("friendL"));
+        friendL = getIntent().getStringArrayExtra("friendL");
+        friendS = getIntent().getIntegerArrayListExtra("friendS");
+        ArrayAdapter adapter = new ArrayAdapter<String>(FriendActivity.this,R.layout.listview,R.id.label, friendL);
+        friend = (ListView) findViewById(R.id.listView);
+        friend.setAdapter(adapter);
+        friend.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                toggle();
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                final String item = ((TextView)view.findViewById(R.id.label)).getText().toString();
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendActivity.this);
+                builder.setTitle(item);
+                TextView t = new TextView(FriendActivity.this);
+                t.setText("Articles read:"+random(2,40)+"\nChallenges Issued:"+random(2,40));
+                LinearLayout f = new LinearLayout(FriendActivity.this);
+                f.addView(t);
+                Button b = new Button(FriendActivity.this);
+                b.setText("Challenge "+item.substring(0,item.lastIndexOf('\t')));
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(FriendActivity.this, AddForm.class);
+                        i.putExtra("friend",MainActivity.friends.indexOf(item));
+                        startActivity(i);
+                    }
+                });
+                f.addView(b);
+                builder.setView(f);
+                builder.show();
             }
         });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
-    }
-
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+        Button btnP = (Button) findViewById(R.id.button2);
+        btnP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(FriendActivity.this, MainActivity.class);
+                i.putExtra("friendL", friendL);
+                i.putExtra("friendS", friendS);
+                startActivity(i);
             }
-            return false;
-        }
-    };
+        });
+        Button btn = (Button) findViewById(R.id.button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendActivity.this);
+                builder.setTitle("Enter Friend's Username");
 
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
+                // Set up the input
+                final EditText input = new EditText(FriendActivity.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-    private void hide() {
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-        mControlsView.setVisibility(View.GONE);
-        mVisible = false;
+                        ArrayList<String> temp = new ArrayList<String>(Arrays.asList(MainActivity.friends.toArray(new String[0])));
+                        Double a =  250*(Math.floor(Math.random()*40)+1);
+                        while(friendS.contains(a.intValue())){
+                            a =  250*(Math.floor(Math.random()*40)+1);
+                        }
+                        temp.add(((TextView) input).getText().toString() + "\t(Score: "+a.intValue()+")");
+                        friendS.add(a.intValue());
 
-        // Schedule a runnable to remove the status and navigation bar after a delay
-        mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-    }
+                        HashMap<Integer, String> t = new HashMap<Integer,String>();
+                        System.out.println(temp);
+                        for (int i=0; i < temp.size();i++){
+                            t.put(friendS.get(i), temp.get(i));
+                        }
+                        Collections.sort(friendS);
+                        Collections.reverse(friendS);
+                        temp = new ArrayList<String>();
+                        for (int i=0; i < friendS.size();i++){
 
-    private final Runnable mHidePart2Runnable = new Runnable() {
-        @SuppressLint("InlinedApi")
-        @Override
-        public void run() {
-            // Delayed removal of status and navigation bar
+                            temp.add(t.get(friendS.get(i)));
+                        }
+                        MainActivity.friends = temp;
+                        friendL = temp.toArray(new String[0]);
+                        System.out.println(temp);
+                        ArrayAdapter adapter = new ArrayAdapter<String>(FriendActivity.this,R.layout.listview,R.id.label, friendL);
+                        friend.setAdapter(adapter);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
 
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    };
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
+                builder.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private final Handler mHideHandler = new Handler();
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+        });
+    }
+    public int random(int start, int end){
+        return new Double(Math.floor((Math.random()*end) + start)).intValue();
     }
 }
