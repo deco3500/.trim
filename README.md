@@ -6,9 +6,9 @@ Welcome to the **.trim()** repository. This repository demonstrates a show case 
 
 The project proposal as submitted on 2 September 2016. This document will provide a run through of the original concept and more information about the **.trim()** team members and procedures.
 
-##[Design Prototype]()
+##[Design Prototype](https://www.dropbox.com/s/gs69zk6gwg13cde/app-debug.apk?dl=0)
 
 
 
-##[Prototype Documentation]()
+##[Prototype Documentation](https://docs.google.com/document/d/1TPhnp1r54r4IPWhUW4o6yccz5Dt5bPlWlp4d9BGwYIE/edit?usp=sharing)
 
