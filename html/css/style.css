@@ -10,7 +10,7 @@ body{ 	font-size:14px;
 h1{ 
 		font-size:48px;
 		color:#FFF;
-		font-family: 'Lobster', cursive;
+		font-family: 'Lobster', sans-serif;
 		text-align:center;
 		padding-top:13px;}
 
@@ -34,14 +34,12 @@ h1{
 #left{
 	height:870px;
 	width:103px;
-	background-image: url(../images/banner-left.png);
 	background-repeat: repeat-y;
 }
 
 #right{
 	height:870px;
 	width:103px;
-	background-image: url(../images/banner-right.png);
 	background-repeat: repeat-y;
 }
 table{	border-collapse: collapse;
