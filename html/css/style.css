@@ -34,13 +34,11 @@ h1{
 #left{
 	height:100%;
 	width:103px;
-	background-repeat: repeat-y;
 }
 
 #right{
 	height:100%;
-	width:103px;
-	background-repeat: repeat-y;
+	width:103px;	
 }
 table{	border-collapse: collapse;
 		margin-left:auto;
